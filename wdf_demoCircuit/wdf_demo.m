@@ -1,5 +1,5 @@
 % WDF Linear Circuit Example
-addpath class_definitions;
+addpath ../class_definitions;
 Fs = 48000;
 N = Fs/10;
 gain = 30;
