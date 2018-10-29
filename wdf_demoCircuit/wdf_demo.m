@@ -34,7 +34,7 @@ for i=1:N
     s2.WD = cOut;
     cStateIn = cIn;
     cStateOut = cOut;
-    output(i) = Voltage(R3);
+    output(i) = Voltage(s2);
 end
 
 % plots
