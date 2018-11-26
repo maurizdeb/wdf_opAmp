@@ -16,8 +16,8 @@ t=0:N-1;
 t_label = (1:length(t))./Fs;
 
 trigger = zeros(length(t),1);
-trigger(1:round(Fs/1000)) = 1;
-trigger(round(Fs/1000)+1:end) = 0;
+trigger(1:round(Fs/10000)) = 1;
+trigger(round(Fs/10000):end) = 0;
 y = G.*trigger;
 
 R1 = R(500);
@@ -32,8 +32,6 @@ C1 = C(1/(2*Fs*(1e-9)));
 C1.Conductance;
 C2 = C(1/(2*Fs*(1e-9)));
 C2.Conductance;
-
-
 
 output = zeros(length(y), 1);
 
@@ -144,10 +142,20 @@ for i=1:N
     output(i) = Voltage(RL);
 end
 
+NFFT = 2^nextpow2(N);
+%OUT1 = fft(output, NFFT)/NFFT;
+OUT1 = abs(fft(output, NFFT));
+OUT = OUT1(1:NFFT/2+1);
+OUT(2:end-1) = 2*OUT(2:end-1);
+subplot(2,1,1);
 plot(t_label, y, '--'); 
 hold on;
 plot(t_label, output);
+hold off;
 grid on;
 xlabel Time(s);
 ylabel Voltage(V);
+subplot(2,1,2);
+%plot(Fs/NFFT*((0:(NFFT/2))),pow2db(abs(OUT(1:NFFT/2+1))));
+plot(Fs/NFFT*((0:(NFFT/2))), 20*log10(OUT));
 
