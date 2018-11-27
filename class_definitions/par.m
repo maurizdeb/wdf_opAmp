@@ -21,7 +21,9 @@ classdef par < Adaptor
         end
         
         function WU = WaveUp(obj)
-            if obj.PortRes == 0
+            if obj.KidLeft.PortRes == 0
+                refCoeff = 1;
+            elseif obj.KidRight.PortRes == 0
                 refCoeff = 0;
             else
                 refCoeff = (1/obj.KidLeft.PortRes)/(1/obj.PortRes);
@@ -32,7 +34,9 @@ classdef par < Adaptor
         
         function set.WD(obj, WaveFromParent)
             obj.WD = WaveFromParent;
-            if obj.PortRes == 0
+            if obj.KidLeft.PortRes == 0
+                refCoeff = 1;
+            elseif obj.KidRight.PortRes == 0
                 refCoeff = 0;
             else
                 refCoeff = (1/obj.KidLeft.PortRes)/(1/obj.PortRes);

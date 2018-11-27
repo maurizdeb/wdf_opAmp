@@ -4,7 +4,7 @@ clc
 
 %%
 
-addpath class_definitions;
+addpath ../class_definitions;
 
 syms Ra Rb Rc Rd Re Rf;
 
