@@ -43,7 +43,7 @@ classdef MNAMatrix < hgsetget
             % As a convention i is the + of the norator, j is the - of the
             % norator
             % k is the + of the nullator, l is the - of the nullator
-            obj.X([k, l, i, j, obj.numNodes + numSource],[k, l, i, j, obj.numNodes+numSource]) = obj.X([k, l, i, j, obj.numNodes + numSource],[k, l, i, j, obj.numNodes+numSource]) + [0, 0, 0, 0; 0, 0, 0, 0; 0, 0, 0, 1; 0, 0, 0, -1; +1, -1, 0, 0];
+            obj.X([k, l, i, j, obj.numNodes + numSource],[k, l, i, j, obj.numNodes+numSource]) = obj.X([k, l, i, j, obj.numNodes + numSource],[k, l, i, j, obj.numNodes+numSource]) + [0, 0, 0, 0, 0; 0, 0, 0, 0, 0; 0, 0, 0, 0, 1; 0, 0, 0, 0, -1; +1, -1, 0, 0, 0];
         end
         
     end
