@@ -6,11 +6,11 @@ classdef RJunction < WDF
         S;
         WU;
         WD;
-        Ports;
+        AdaptedPortResistance;
     end
     
     methods
-        function obj = RJunction(MnaMatrix, R_vect, R_value, adaptedElement)
+        function obj = RJunction(MnaMatrix, R_vect, R_value, adaptedPort)
             %MnaMatrix is a MNAMatrix object
             %
             %R_vect is a symbolic vector, with the port resistances, this
@@ -33,9 +33,11 @@ classdef RJunction < WDF
             right_term = [zeros(numPort, (numNodes-1) ), eye(numPort), zeros(numPort, numAbsorbedElements)];
             S = eye(numPort) + left_term*(X_inv*(right_term'));
             
-            [R_PortRes, param, cond] = solve(S(1,1)==0, Ra, 'ReturnConditions', true);
+            el = find(R_vect==adaptedPort);
+            
+            [R_PortRes, param, cond] = solve(S(el,el)==0, adaptedPort, 'ReturnConditions', true);
             assume(cond);
-            R_PortRes = double(subs(R_PortRes, R_vect(2:end), R_value));
+            R_PortRes = double(subs(R_PortRes, R_vect(1:el, el+1:end), R_value));
             R_value = [R_PortRes, R_value];
             obj.S = double(subs(S, R_vect, R_value));
             

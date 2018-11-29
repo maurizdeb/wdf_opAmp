@@ -37,8 +37,6 @@ addVCVSStamp(Xmat, 3, 1, 6, 10, 12, 3.1625);
 addVCVSStamp(Xmat, 3, 4, 10, 9, 13, (200e+3));
 addVCVSStamp(Xmat, 4, 1, 9, 1, 14, 3.1625);
 addVCVSStamp(Xmat, 5, 1, 8, 1, 15, 1);
- 
-X = Xmat.X;
 
 %% modeling of junctions and ports of circuit
 Fs = 44100;
@@ -65,21 +63,12 @@ C1 = C(1/(2*Fs*(1e-9)));
 
 %% adaptation of R junction
 
-X = X(2:end, 2:end);
-X_inv = inv(X);
-
 R_vect = [Ra, Rb, Rc, Rd, Re, Rf, Rg, Rh, Ri, Rj, Rk];
 R_value = [p1.PortRes, p2.PortRes, p3.PortRes, Rbw.PortRes, Cbw.PortRes, Rout.PortRes, RL.PortRes, C2.PortRes, R2.PortRes, C1.PortRes];
-R_diag = diag(R_vect);
-left_term = 2*[zeros(11,20), R_diag, zeros(11, 4)];
-right_term = [zeros(11,20), eye(11), zeros(11,4)];
-S = eye(11) + left_term*(X_inv*(right_term'));
 
-[R_PortRes, param, cond] = solve(S(1,1)==0, Ra, 'ReturnConditions', true);
-assume(cond);
-R_PortRes = double(subs(R_PortRes, R_vect(2:end), R_value));
-R_value = [R_PortRes, R_value];
-S = double(subs(S, R_vect, R_value));
+Rjunc = RJunction(Xmat, R_vect, R_value, Ra);
+
+S = Rjunc.S;
 
 %% WDF circuit simulation
 
