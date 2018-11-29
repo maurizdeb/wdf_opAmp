@@ -6,7 +6,7 @@ classdef RJunction < WDF
         S;
         WU;
         WD;
-        AdaptedPortResistance;
+        AdaptedPortRes;
     end
     
     methods
@@ -28,6 +28,7 @@ classdef RJunction < WDF
             X_inv = inv(X);
             
             %compute scattering matrix: S = I + 2[0 R] * X^(-1) * [0 I]'
+            %COULD NOT WORK WITH NULLORS
             R_diag = diag(R_vect);
             left_term = 2*[zeros(numPort, (numNodes-1) ), R_diag, zeros(numPort, numAbsorbedElements)];
             right_term = [zeros(numPort, (numNodes-1) ), eye(numPort), zeros(numPort, numAbsorbedElements)];
@@ -35,10 +36,10 @@ classdef RJunction < WDF
             
             el = find(R_vect==adaptedPort);
             
-            [R_PortRes, param, cond] = solve(S(el,el)==0, adaptedPort, 'ReturnConditions', true);
+            [obj.AdaptedPortRes, param, cond] = solve(S(el,el)==0, adaptedPort, 'ReturnConditions', true);
             assume(cond);
-            R_PortRes = double(subs(R_PortRes, R_vect(1:el, el+1:end), R_value));
-            R_value = [R_value(1:el-1), R_PortRes, R_value(el:end)];
+            obj.AdaptedPortRes = double(subs(obj.AdaptedPortRes, R_vect(1:el, el+1:end), R_value));
+            R_value = [R_value(1:el-1), obj.AdaptedPortRes, R_value(el:end)];
             obj.S = double(subs(S, R_vect, R_value));
             
         end

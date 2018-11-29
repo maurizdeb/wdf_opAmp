@@ -69,6 +69,7 @@ R_value = [p1.PortRes, p2.PortRes, p3.PortRes, Rbw.PortRes, Cbw.PortRes, Rout.Po
 Rjunc = RJunction(Xmat, R_vect, R_value, Ra);
 
 S = Rjunc.S;
+R_PortRes = Rjunc.AdaptedPortRes;
 
 %% WDF circuit simulation
 
