@@ -39,6 +39,13 @@ classdef MNAMatrix < hgsetget
             obj.X([k, l, obj.numNodes+numSource], [i, j, k, l, obj.numNodes+numSource]) = obj.X([k, l, obj.numNodes+numSource], [i, j, k, l, obj.numNodes+numSource]) + [0, 0, 0, 0, 1; 0, 0, 0, 0, -1; -gain, gain, 1, -1, 0];
         end  
         
+        function addNullorStamp(obj, i, j, k, l, numSource)
+            % As a convention i is the + of the norator, j is the - of the
+            % norator
+            % k is the + of the nullator, l is the - of the nullator
+            obj.X([k, l, i, j, obj.numNodes + numSource],[k, l, i, j, obj.numNodes+numSource]) = obj.X([k, l, i, j, obj.numNodes + numSource],[k, l, i, j, obj.numNodes+numSource]) + [0, 0, 0, 0; 0, 0, 0, 0; 0, 0, 0, 1; 0, 0, 0, -1; +1, -1, 0, 0];
+        end
+        
     end
     
 end

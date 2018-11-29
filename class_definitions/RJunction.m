@@ -38,7 +38,7 @@ classdef RJunction < WDF
             [R_PortRes, param, cond] = solve(S(el,el)==0, adaptedPort, 'ReturnConditions', true);
             assume(cond);
             R_PortRes = double(subs(R_PortRes, R_vect(1:el, el+1:end), R_value));
-            R_value = [R_PortRes, R_value];
+            R_value = [R_value(1:el-1), R_PortRes, R_value(el:end)];
             obj.S = double(subs(S, R_vect, R_value));
             
         end
