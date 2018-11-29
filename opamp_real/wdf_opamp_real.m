@@ -5,64 +5,40 @@ clc
 %% creation of MNA X matrix
 
 addpath ../class_definitions;
-syms Ra Rb Rc Rd Re Rf Rg Rh Ri Rj Rk
+syms Ra Rb Rc Rd Re Rf Rg Rh Ri Rj Rk;
 
-XA = sym(zeros(21,21));
-XB = sym(zeros(15,21));
-XC = sym(zeros(21,15));
-XD = sym(zeros(15,15));
-XA([2,11],[2,11]) = XA([2,11],[2,11]) + [1/Ra, -1/Ra; -1/Ra, 1/Ra];
-XA([3, 12],[3, 12]) = XA([3,12],[3,12]) + [1/Rb, -1/Rb; -1/Rb, 1/Rb];
-XA([4, 13], [4, 13]) = XA([4, 13], [4, 13]) + [1/Rc, -1/Rc; -1/Rc, 1/Rc];
-XA([4, 14], [4, 14]) = XA([4, 14], [4, 14]) + [1/Rd, -1/Rd; -1/Rd, 1/Rd];
-XA([6, 15], [6, 15]) = XA([6, 15], [6, 15]) + [1/Re, -1/Re; -1/Re, 1/Re];
-XA([1, 16], [1, 16]) = XA([1, 15], [1, 16]) + [1/Rf, -1/Rf; -1/Rf, 1/Rf];
-XA([8, 17], [8, 17]) = XA([8, 17], [8, 17]) + [1/Rg, -1/Rg; -1/Rg, 1/Rg];
-XA([7, 18], [7, 18]) = XA([7, 18], [7, 18]) + [1/Rh, -1/Rh; -1/Rh, 1/Rh];
-XA([7, 19], [7, 19]) = XA([7, 19], [7, 19]) + [1/Ri, -1/Ri; -1/Ri, 1/Ri];
-XA([7, 20], [7, 20]) = XA([7, 20], [7, 20]) + [1/Rj, -1/Rj; -1/Rj, 1/Rj];
-XA([4, 21], [4, 21]) = XA([4, 21], [4, 21]) + [1/Rk, -1/Rk; -1/Rk, 1/Rk];
-XB(1,11) = XB(1,11)+1;
-XB(1,1) = XB(1,1) -1;
-XB(2,12) = XB(2,12)+1;
-XB(2,1) = XB(2,1)-1;
-XB(3,13) = XB(3,13)+1;
-XB(3,1) = XB(3,1)-1;
-XB(4,14)=XB(4,14)+1;
-XB(4,3) = XB(4,3)-1;
-XB(5,15) = XB(5,15)+1;
-XB(5,5) = XB(5,5)-1;
-XB(6,16) = XB(6,16)+1;
-XB(6,5) = XB(6,5)-1;
-XB(7,17)=XB(7,17)+1;
-XB(7,7)=XB(7,7)-1;
-XB(8,18)=XB(8,18)+1;
-XB(8,1)=XB(8,1)-1;
-XB(9,19)=XB(9,19)+1;
-XB(9,2)=XB(9,2)-1;
-XB(10,20) = XB(10,20)+1;
-XB(10,4)=XB(10,4)-1;
-XB(11,21) = XB(11,21)+1;
-XB(11,2)=XB(11,2)-1;
-XB(12, 6) = XB(12, 6)+1;
-XB(12, 10) = XB(12,10)-1;
-XB(13,10)=XB(13,10)+1;
-XB(13,9)=XB(13,9)-1;
-XB(14,9)=XB(14,9)+1;
-XB(14,1)=XB(14,1)-1;
-XB(15,8)=XB(15,8)+1;
-XB(15, 1)=XB(15,1)-1;
-XC = XC + XB';
-XB(12,3) = XB(12,3)-3.1625;
-XB(12,1)=XB(12,1)+3.1625;
-XB(13,3) = XB(13,3)-(200e+3);
-XB(13,4)=XB(13,4)+(200e+3);
-XB(14,4)=XB(14,4)-3.1625;
-XB(14,1)=XB(14,1)+3.1625;
-XB(15,5)=XB(15,5)-1;
-XB(15,1)=XB(15,1)+1;
-
-X=[XA, XC; XB, XD];
+Xmat = MNAMatrix(21, 11, 4);
+%adding resistor stamps
+addResistorStamp(Xmat, Ra, 2, 11);
+addResistorStamp(Xmat, Rb, 3, 12);
+addResistorStamp(Xmat, Rc, 4, 13);
+addResistorStamp(Xmat, Rd, 4, 14);
+addResistorStamp(Xmat, Re, 6, 15);
+addResistorStamp(Xmat, Rf, 1, 16);
+addResistorStamp(Xmat, Rg, 8, 17);
+addResistorStamp(Xmat, Rh, 7, 18);
+addResistorStamp(Xmat, Ri, 7, 19);
+addResistorStamp(Xmat, Rj, 7, 20);
+addResistorStamp(Xmat, Rk, 4, 21);
+%adding voltage sources stamps
+addVoltageSourceStamp(Xmat, 11, 1, 1);
+addVoltageSourceStamp(Xmat, 12, 1, 2);
+addVoltageSourceStamp(Xmat, 13, 1, 3);
+addVoltageSourceStamp(Xmat, 14, 3, 4);
+addVoltageSourceStamp(Xmat, 15, 5, 5);
+addVoltageSourceStamp(Xmat, 16, 5, 6);
+addVoltageSourceStamp(Xmat, 17, 7, 7);
+addVoltageSourceStamp(Xmat, 18, 1, 8);
+addVoltageSourceStamp(Xmat, 19, 2, 9);
+addVoltageSourceStamp(Xmat, 20, 4, 10);
+addVoltageSourceStamp(Xmat, 21, 2, 11);
+%adding VCVS stamps
+addVCVSStamp(Xmat, 3, 1, 6, 10, 12, 3.1625);
+addVCVSStamp(Xmat, 3, 4, 10, 9, 13, (200e+3));
+addVCVSStamp(Xmat, 4, 1, 9, 1, 14, 3.1625);
+addVCVSStamp(Xmat, 5, 1, 8, 1, 15, 1);
+ 
+X = Xmat.X;
 
 %% modeling of junctions and ports of circuit
 Fs = 44100;
