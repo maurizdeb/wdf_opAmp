@@ -36,9 +36,9 @@ C2 = C(1/(2*Fs*(1e-9)));
 %% adaptation of R
 
 R_vect = [Ra, Rb, Rc, Rd, Re, Rf];
-R_value = [R2.PortRes, C2.PortRes, RL.PortRes, V1.PortRes, C1.PortRes];
+ConnectedPorts = [R2, C2, RL, V1, C1];
 
-Rjunc = RJunction(Xmat, R_vect, R_value, Ra);
+Rjunc = RJunction(Xmat, R_vect, ConnectedPorts, Ra);
 
 S = Rjunc.S;
 R_PortRes = Rjunc.PortRes;
@@ -61,22 +61,24 @@ r = (R1.PortRes - R_PortRes)/(R1.PortRes+R_PortRes);
 for i=1:N
     
     V1.E = y(i);
-    WU_B = WaveUp(R2);
-    WU_C = WaveUp(C2);
-    WU_D = WaveUp(RL);
-    WU_E = WaveUp(V1);
-    WU_F = WaveUp(C1);
-    
-    WU_R = S(1,:)*[0, WU_B, WU_C, WU_D, WU_E, WU_F]';
+%     WU_B = WaveUp(R2);
+%     WU_C = WaveUp(C2);
+%     WU_D = WaveUp(RL);
+%     WU_E = WaveUp(V1);
+%     WU_F = WaveUp(C1);
+%     
+%     WU_R = S(1,:)*[0, WU_B, WU_C, WU_D, WU_E, WU_F]';
+    WU_R = WaveUp(Rjunc);
     WD_R = r*WU_R;
     
-    b = S*[WD_R, WU_B, WU_C, WU_D, WU_E, WU_F]';
-    
-    R2.WD = b(2);
-    C2.WD = b(3);
-    RL.WD = b(4);
-    V1.WD = b(5);
-    C1.WD = b(6);
+%     b = S*[WD_R, WU_B, WU_C, WU_D, WU_E, WU_F]';
+%     
+%     R2.WD = b(2);
+%     C2.WD = b(3);
+%     RL.WD = b(4);
+%     V1.WD = b(5);
+%     C1.WD = b(6);
+    Rjunc.WD = WD_R;
     
     output(i) = Voltage(RL);
     

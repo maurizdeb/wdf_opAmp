@@ -1,7 +1,7 @@
 % WDF classes
 
 % ----------------WDF Class-----------------
-classdef WDF < hgsetget
+classdef WDF < hgsetget & matlab.mixin.Heterogeneous
    
     properties
         PortRes; % the WDF port resistance

@@ -45,7 +45,7 @@ R1 = R(500);
 Ib1 = I(90e-9, 2*(5e+6));
 Ccm1 = C(1/(4*Fs*(2e-12)));
 Ccm2 = C(1/(4*Fs*(2e-12)));
-Vin = V(0,1e-12);
+Vin = V(0,0);
 Voff = 1e-3;
 p1 = par(Vin, par(Ib1, Ccm1));
 Ib2 = I(70e-9, 2*(5e+6));
@@ -64,9 +64,9 @@ C1 = C(1/(2*Fs*(1e-9)));
 %% adaptation of R junction
 
 R_vect = [Ra, Rb, Rc, Rd, Re, Rf, Rg, Rh, Ri, Rj, Rk];
-R_value = [p1.PortRes, p2.PortRes, p3.PortRes, Rbw.PortRes, Cbw.PortRes, Rout.PortRes, RL.PortRes, C2.PortRes, R2.PortRes, C1.PortRes];
+ConnectedPorts = [p1, p2, p3, Rbw, Cbw, Rout, RL, C2, R2, C1];
 
-Rjunc = RJunction(Xmat, R_vect, R_value, Ra);
+Rjunc = RJunction(Xmat, R_vect, ConnectedPorts, Ra);
 
 S = Rjunc.S;
 R_PortRes = Rjunc.PortRes;
@@ -89,23 +89,26 @@ r = (R1.PortRes - R_PortRes)/(R1.PortRes+R_PortRes);
 for i=1:N
     
     Vin.E = y(i)-Voff;
-    WUPs = [WaveUp(p1), WaveUp(p2), WaveUp(p3), WaveUp(Rbw), WaveUp(Cbw), WaveUp(Rout), WaveUp(RL), WaveUp(C2), WaveUp(R2), WaveUp(C1)];
+    %WUPs = [WaveUp(p1), WaveUp(p2), WaveUp(p3), WaveUp(Rbw), WaveUp(Cbw), WaveUp(Rout), WaveUp(RL), WaveUp(C2), WaveUp(R2), WaveUp(C1)];
     
-    WU_R = S(1,:)*([0, WUPs]');
-    WD_R = r*WU_R;
+    %WU_R = S(1,:)*([0, WUPs]');
+    %WD_R = r*WU_R;
     
-    b = S*([WD_R, WUPs]');
+    %b = S*([WD_R, WUPs]');
     
-    p1.WD = b(2);
-    p2.WD=b(3);
-    p3.WD=b(4);
-    Rbw.WD=b(5);
-    Cbw.WD=b(6);
-    Rout.WD=b(7);
-    RL.WD=b(8);
-    C2.WD=b(9);
-    R2.WD=b(10);
-    C1.WD=b(11);
+    WU_R = WaveUp(Rjunc);
+    Rjunc.WD = r*WU_R;
+    
+%     p1.WD = b(2);
+%     p2.WD=b(3);
+%     p3.WD=b(4);
+%     Rbw.WD=b(5);
+%     Cbw.WD=b(6);
+%     Rout.WD=b(7);
+%     RL.WD=b(8);
+%     C2.WD=b(9);
+%     R2.WD=b(10);
+%     C1.WD=b(11);
     
     output(i) = Voltage(RL);
 end
