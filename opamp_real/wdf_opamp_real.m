@@ -89,36 +89,21 @@ r = (R1.PortRes - R_PortRes)/(R1.PortRes+R_PortRes);
 for i=1:N
     
     Vin.E = y(i)-Voff;
-    %WUPs = [WaveUp(p1), WaveUp(p2), WaveUp(p3), WaveUp(Rbw), WaveUp(Cbw), WaveUp(Rout), WaveUp(RL), WaveUp(C2), WaveUp(R2), WaveUp(C1)];
-    
-    %WU_R = S(1,:)*([0, WUPs]');
-    %WD_R = r*WU_R;
-    
-    %b = S*([WD_R, WUPs]');
     
     WU_R = WaveUp(Rjunc);
     Rjunc.WD = r*WU_R;
     
-%     p1.WD = b(2);
-%     p2.WD=b(3);
-%     p3.WD=b(4);
-%     Rbw.WD=b(5);
-%     Cbw.WD=b(6);
-%     Rout.WD=b(7);
-%     RL.WD=b(8);
-%     C2.WD=b(9);
-%     R2.WD=b(10);
-%     C1.WD=b(11);
     
     output(i) = Voltage(RL);
 end
 
 t_label =(1:length(t))./Fs;
 NFFT = 2^nextpow2(N);
-%OUT1 = fft(output, NFFT)/NFFT;
 OUT1 = abs(fft(output, NFFT));
 OUT = OUT1(1:NFFT/2+1);
 OUT(2:end-1) = 2*OUT(2:end-1);
+
+%plot time signal
 subplot(2,1,1);
 plot(t_label, y, '--'); 
 hold on;
@@ -127,13 +112,15 @@ hold off;
 grid on;
 xlabel Time(s);
 ylabel Voltage(V);
+
+%plot fft of signal
 subplot(2,1,2);
-%plot(Fs/NFFT*((0:(NFFT/2))),pow2db(abs(OUT(1:NFFT/2+1))));
 f = Fs/NFFT*((0:(NFFT/2)));
 f1 = (NFFT/Fs)*1000;
 f2 = (NFFT/Fs)*3000;
 OUT_db = 20*log10(OUT);
 plot(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)));
+axis([1000 3000 0 max(OUT_db(floor(f1):floor(f2)))+10]);
 grid on;
 xlabel('Frequency (Hz)');
 ylabel('magnitude (dB)');

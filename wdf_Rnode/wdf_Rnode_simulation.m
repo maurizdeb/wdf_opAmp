@@ -15,8 +15,9 @@ f0 = 100;
 trigger = zeros(length(t),1);
 trigger(1:round(Fs/10000)) = 1;
 trigger(round(Fs/10000)+1:end) = 0;
-G = 10e-3;
+G = 20;
 input = 20.*sin((2*pi*f0/Fs).*t);
+%input = G.*trigger;
 
 %% creation of MNA X matrix
 
