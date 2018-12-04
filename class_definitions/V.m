@@ -9,13 +9,13 @@ classdef V < OnePort
     end
     
     methods
-        function obj = V(E, PortRes) % se PortRes = 0 -----> generatore ideale
+        function obj = V(E, PortRes) 
             obj.E = E;
             obj.PortRes = PortRes; 
             obj.WD = 0; % valore iniziale del generatore
         end
         function WU = WaveUp(obj)
-            WU = 2*obj.E - obj.WD;
+            WU = obj.E;
             obj.WU = WU;
         end
     end

@@ -1,5 +1,5 @@
 clear all
-close all
+close all 
 clc
 
 %% creation of MNA X matrix
@@ -73,13 +73,13 @@ R_PortRes = Rjunc.PortRes;
 
 %% WDF circuit simulation
 
-G = 10e-3;
+G = 100e-3;
 N = Fs/10;
 t=0:N-1;
 
 trigger = zeros(length(t),1);
-trigger(1:round(Fs/10000)) = 1;
-trigger(round(Fs/10000):end) = 0;
+trigger(1) = 1;
+trigger(2:end) = 0;
 y = G.*trigger;
 
 output = zeros(length(y), 1);
@@ -97,13 +97,15 @@ for i=1:N
     output(i) = Voltage(RL);
 end
 
+%plot signal in time
 t_label =(1:length(t))./Fs;
 NFFT = 2^nextpow2(N);
-OUT1 = abs(fft(output, NFFT));
+out_fft = fft(output, NFFT);
+OUT1 = abs(out_fft);
+OUT1_phase = (180/pi)*angle(out_fft);
 OUT = OUT1(1:NFFT/2+1);
-OUT(2:end-1) = 2*OUT(2:end-1);
-
-%plot time signal
+OUT1_phase = OUT1_phase(1:NFFT/2+1);
+%OUT(2:end-1) = 2*OUT(2:end-1);
 subplot(2,1,1);
 plot(t_label, y, '--'); 
 hold on;
@@ -119,8 +121,16 @@ f = Fs/NFFT*((0:(NFFT/2)));
 f1 = (NFFT/Fs)*1000;
 f2 = (NFFT/Fs)*3000;
 OUT_db = 20*log10(OUT);
-plot(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)));
-axis([1000 3000 0 max(OUT_db(floor(f1):floor(f2)))+10]);
+yyaxis left;
+semilogx(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)));
+ylabel('magnitude (dB)');
+axis([1000 3000 -6 68]);
+hold on;
+yyaxis right;
+semilogx(f(floor(f1):floor(f2)), OUT1_phase(floor(f1):floor(f2)), '--');
+%ylim([-100, 100]);
+ylabel('phase');
+hold off
+axis([1000 3000 -100 100]);
 grid on;
 xlabel('Frequency (Hz)');
-ylabel('magnitude (dB)');

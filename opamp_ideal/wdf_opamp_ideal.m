@@ -27,7 +27,7 @@ addNullorStamp(Xmat, 5, 1, 2, 3, 7);
 
 Fs = 44100;
 R1 = R(500);
-V1 = V(0,0);
+V1 = V(0,1);
 R2 = R(10e+6);
 RL = R(10e+3);
 C1 = C(1/(2*Fs*(1e-9)));
@@ -45,7 +45,7 @@ R_PortRes = Rjunc.PortRes;
 
 %% WDF circuit simulation
 
-G = 10e-3;
+G = 100e-3;
 N = Fs/10;
 t=0:N-1;
 
@@ -73,9 +73,12 @@ end
 %plot signal in time
 t_label =(1:length(t))./Fs;
 NFFT = 2^nextpow2(N);
-OUT1 = abs(fft(output, NFFT));
+out_fft = fft(output, NFFT);
+OUT1 = abs(out_fft);
+OUT1_phase = (180/pi)*angle(out_fft);
 OUT = OUT1(1:NFFT/2+1);
-OUT(2:end-1) = 2*OUT(2:end-1);
+OUT1_phase = OUT1_phase(1:NFFT/2+1);
+%OUT(2:end-1) = 2*OUT(2:end-1);
 subplot(2,1,1);
 plot(t_label, y, '--'); 
 hold on;
@@ -91,8 +94,16 @@ f = Fs/NFFT*((0:(NFFT/2)));
 f1 = (NFFT/Fs)*1000;
 f2 = (NFFT/Fs)*3000;
 OUT_db = 20*log10(OUT);
-plot(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)));
-axis([1000 3000 0 max(OUT_db(floor(f1):floor(f2)))+10]);
+yyaxis left;
+semilogx(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)));
+ylabel('magnitude (dB)');
+axis([1000 3000 -6 68]);
+hold on;
+yyaxis right;
+semilogx(f(floor(f1):floor(f2)), OUT1_phase(floor(f1):floor(f2)), '--');
+%ylim([-100, 100]);
+ylabel('phase');
+hold off
+axis([1000 3000 -100 100]);
 grid on;
 xlabel('Frequency (Hz)');
-ylabel('magnitude (dB)');

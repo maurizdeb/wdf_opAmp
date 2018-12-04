@@ -1,4 +1,10 @@
+%%
+clear all
+close all
+clc
+%%
 % WDF Linear Circuit Example
+
 addpath ../class_definitions;
 Fs = 48000;
 N = Fs/10;

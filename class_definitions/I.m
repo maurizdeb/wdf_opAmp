@@ -16,7 +16,7 @@ classdef I < OnePort
         end
         
         function WU = WaveUp(obj)
-            WU = obj.WD - 2*(obj.PortRes)*(obj.A);
+            WU = -(obj.PortRes)*(obj.A);
             obj.WU = WU;
         end
     end
