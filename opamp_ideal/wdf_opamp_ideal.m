@@ -50,8 +50,8 @@ N = Fs/10;
 t=0:N-1;
 
 trigger = zeros(length(t),1);
-trigger(1:round(Fs/10000)) = 1;
-trigger(round(Fs/10000):end) = 0;
+trigger(1) = 1;
+trigger(2:end) = 0;
 y = G.*trigger;
 
 output = zeros(length(y), 1);
@@ -80,8 +80,8 @@ OUT = OUT1(1:NFFT/2+1);
 OUT1_phase = OUT1_phase(1:NFFT/2+1);
 %OUT(2:end-1) = 2*OUT(2:end-1);
 subplot(2,1,1);
-plot(t_label, y, '--'); 
-hold on;
+% plot(t_label, y, '--'); 
+% hold on;
 plot(t_label, output);
 hold off;
 grid on;
