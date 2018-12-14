@@ -25,7 +25,7 @@ addNullorStamp(Xmat, 5, 1, 2, 3, 7);
 
 %% modeling of circuit
 
-Fs = 44100;
+Fs = 800000;
 R1 = R(500);
 V1 = V(0,1);
 R2 = R(10e+6);
@@ -70,7 +70,25 @@ for i=1:N
     
 end
 
-x = LTspice2Matlab('opamp_ideal.raw', 2);
+trigger = zeros(length(t),1);
+trigger(1:round(Fs/10000)) = 1;
+trigger(round(Fs/10000):end) = 0;
+y = G.*trigger;
+
+for i=1:N
+    
+    V1.E = y(i);
+    
+    WU_R = WaveUp(Rjunc);
+    WD_R = r*WU_R;
+    Rjunc.WD = WD_R;
+    
+    output_time(i) = Voltage(RL);
+    
+end
+
+x_time = LTspice2Matlab('opamp_ideal.raw', 2);
+x = LTspice2Matlab('opamp_ideal_freq.raw', 2);
 %plot signal in time
 t_label =(1:length(t))./Fs;
 NFFT = 2^nextpow2(N);
@@ -82,8 +100,9 @@ OUT1_phase = OUT1_phase(1:NFFT/2+1);
 %OUT(2:end-1) = 2*OUT(2:end-1);
 subplot(2,1,1);
 % plot(t_label, y, '--'); 
-% hold on;
-plot(t_label, output);
+hold on;
+plot(t_label, output_time);
+plot(x_time.time_vect, x_time.variable_mat,'--');
 hold off;
 grid on;
 xlabel Time(s);
