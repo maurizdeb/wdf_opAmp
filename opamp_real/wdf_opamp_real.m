@@ -45,7 +45,7 @@ R1 = R(500);
 Ib1 = I(90e-9, 2*(5e+6));
 Ccm1 = C(1/(4*Fs*(2e-12)));
 Ccm2 = C(1/(4*Fs*(2e-12)));
-Vin = V(0,0);
+Vin = V(0,1);
 Voff = 1e-3;
 p1 = par(Vin, par(Ib1, Ccm1));
 Ib2 = I(70e-9, 2*(5e+6));
@@ -71,14 +71,14 @@ Rjunc = RJunction(Xmat, R_vect, ConnectedPorts, Ra);
 S = Rjunc.S;
 R_PortRes = Rjunc.PortRes;
 
-%% WDF circuit simulation
+%%
 
 G = 100e-3;
-N = Fs/10;
+N = round(Fs/5);
 t=0:N-1;
 
 trigger = zeros(length(t),1);
-trigger(1) = 1;
+trigger(1) = 0;
 trigger(2:end) = 0;
 y = G.*trigger;
 
@@ -93,6 +93,29 @@ for i=1:N
     WU_R = WaveUp(Rjunc);
     Rjunc.WD = r*WU_R;
     
+    output(i) = Voltage(RL);
+end
+%% WDF circuit simulation
+
+G = 100e-3;
+N = Fs/10;
+t=0:N-1;
+
+trigger = zeros(length(t),1);
+trigger(1:round(Fs/10000)) = 1;
+trigger(round(Fs/10000):end) = 0;
+y = G.*trigger;
+
+output = zeros(length(y), 1);
+
+r = (R1.PortRes - R_PortRes)/(R1.PortRes+R_PortRes);
+
+for i=1:N
+    
+    Vin.E = y(i)-Voff;
+    
+    WU_R = WaveUp(Rjunc);
+    Rjunc.WD = r*WU_R;
     
     output(i) = Voltage(RL);
 end
