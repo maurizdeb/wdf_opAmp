@@ -70,6 +70,7 @@ for i=1:N
     
 end
 
+x = LTspice2Matlab('opamp_ideal.raw', 2);
 %plot signal in time
 t_label =(1:length(t))./Fs;
 NFFT = 2^nextpow2(N);
@@ -95,15 +96,18 @@ f1 = (NFFT/Fs)*1000;
 f2 = (NFFT/Fs)*3000;
 OUT_db = 20*log10(OUT);
 yyaxis left;
-semilogx(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)));
+hold on;
+semilogx(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)), 'DisplayName','WDF Magnitude');
+semilogx(x.freq_vect, 20*log10(abs(x.variable_mat)), '--', 'DisplayName', 'LTSpice Magnitude');
 ylabel('magnitude (dB)');
 axis([1000 3000 -6 68]);
-hold on;
 yyaxis right;
-semilogx(f(floor(f1):floor(f2)), OUT1_phase(floor(f1):floor(f2)), '--');
+semilogx(f(floor(f1):floor(f2)), OUT1_phase(floor(f1):floor(f2)), 'DisplayName', 'WDF Phase');
 %ylim([-100, 100]);
 ylabel('phase');
+semilogx(x.freq_vect, (180/pi)*angle(x.variable_mat),'--', 'DisplayName', 'LTSpice Phase');
 hold off
 axis([1000 3000 -100 100]);
 grid on;
 xlabel('Frequency (Hz)');
+legend;
