@@ -67,10 +67,17 @@ for i=1:N
 
 end
 
+ltspice_vect = LTspice2Matlab('wdf_Rnode.raw', 5);
 t = (1:length(input))./Fs;
-hi = plot(t, input, '--'); hold on;
-ho = plot(t, output); hold off;
+%hi = plot(t, input, '--'); 
+fig = figure();
+hold on;
+plot(t, output, 'r','DisplayName', ' WDF Voltage Over R4'); 
+plot(ltspice_vect.time_vect, ltspice_vect.variable_mat, '--b', 'DisplayName', 'LTspice Voltage Over R4');
+hold off;
 grid on;
 xlabel('Time (s)');
 ylabel('Voltage (V)');
-legend([hi, ho], 'Source Voltage E', 'Voltage Over R4');
+legend;
+
+hgexport(fig, 'Generic Rnode 44100Hz');

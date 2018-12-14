@@ -25,7 +25,7 @@ addNullorStamp(Xmat, 5, 1, 2, 3, 7);
 
 %% modeling of circuit
 
-Fs = 800000;
+Fs = 48000;
 R1 = R(500);
 V1 = V(0,1);
 R2 = R(10e+6);
@@ -56,7 +56,7 @@ y = G.*trigger;
 
 output = zeros(length(y), 1);
 
-r = (R1.PortRes - R_PortRes)/(R1.PortRes+R_PortRes);
+r = (500-R_PortRes)/(500+R_PortRes);
 
 for i=1:N
     
@@ -98,15 +98,18 @@ OUT1_phase = (180/pi)*angle(out_fft);
 OUT = OUT1(1:NFFT/2+1);
 OUT1_phase = OUT1_phase(1:NFFT/2+1);
 %OUT(2:end-1) = 2*OUT(2:end-1);
+
+fig = figure();
 subplot(2,1,1);
 % plot(t_label, y, '--'); 
 hold on;
-plot(t_label, output_time);
-plot(x_time.time_vect, x_time.variable_mat,'--');
+plot(t_label, output_time, 'r', 'DisplayName', 'WDF');
+plot(x_time.time_vect, x_time.variable_mat,'--b', 'DisplayName', 'LTspice');
 hold off;
 grid on;
 xlabel Time(s);
 ylabel Voltage(V);
+legend;
 
 %plot fft of signal
 subplot(2,1,2);
@@ -116,17 +119,19 @@ f2 = (NFFT/Fs)*3000;
 OUT_db = 20*log10(OUT);
 yyaxis left;
 hold on;
-semilogx(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)), 'DisplayName','WDF Magnitude');
-semilogx(x.freq_vect, 20*log10(abs(x.variable_mat)), '--', 'DisplayName', 'LTSpice Magnitude');
+semilogx(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)), 'r','DisplayName','WDF Magnitude');
+semilogx(x.freq_vect, 20*log10(abs(x.variable_mat)), 'b', 'DisplayName', 'LTSpice Magnitude');
 ylabel('magnitude (dB)');
 axis([1000 3000 -6 68]);
 yyaxis right;
-semilogx(f(floor(f1):floor(f2)), OUT1_phase(floor(f1):floor(f2)), 'DisplayName', 'WDF Phase');
+semilogx(f(floor(f1):floor(f2)), OUT1_phase(floor(f1):floor(f2)), 'r','DisplayName', 'WDF Phase');
 %ylim([-100, 100]);
 ylabel('phase');
-semilogx(x.freq_vect, (180/pi)*angle(x.variable_mat),'--', 'DisplayName', 'LTSpice Phase');
+semilogx(x.freq_vect, (180/pi)*angle(x.variable_mat),'b', 'DisplayName', 'LTSpice Phase');
 hold off
 axis([1000 3000 -100 100]);
 grid on;
 xlabel('Frequency (Hz)');
 legend;
+
+hgexport(fig, 'Bridged T result 100000Hz');
