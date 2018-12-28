@@ -44,7 +44,6 @@ classdef RJunction < WDF
             obj.PortRes = double(subs(obj.PortRes, R_vect([1:(el-1), (el+1):end]), R_value));
             R_value = [R_value(1:el-1), obj.PortRes, R_value(el:end)];
             obj.S = double(subs(S, R_vect, R_value));
-            obj.S(el,el) = 0;
             obj.ConnectedPorts = Ports;
         end
         
@@ -76,10 +75,4 @@ classdef RJunction < WDF
     end
     
 end
-
-%numNodes;
-%numPort;
-%numAbsorbedElements;
-%R_vect = [Ra, Rb, Rc, Rd, Re, Rf, Rg, Rh, Ri, Rj, Rk];
-%R_value = [p1.PortRes, p2.PortRes, p3.PortRes, Rbw.PortRes, Cbw.PortRes, Rout.PortRes, RL.PortRes, C2.PortRes, R2.PortRes, C1.PortRes];
 

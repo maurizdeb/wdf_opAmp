@@ -25,7 +25,7 @@ addNullorStamp(Xmat, 5, 1, 2, 3, 7);
 
 %% modeling of circuit
 
-Fs = 48000;
+Fs = 44100;
 R1 = R(500);
 V1 = V(0,1);
 R2 = R(10e+6);
@@ -74,7 +74,18 @@ trigger = zeros(length(t),1);
 trigger(1:round(Fs/10000)) = 1;
 trigger(round(Fs/10000):end) = 0;
 y = G.*trigger;
-
+V1.WD = 0;
+V1.WU = 0;
+C1.WD = 0;
+C1.State = 0;
+C1.WU = 0;
+R2.WD = 0;
+C2.WD = 0;
+C2.State = 0;
+C2.WU = 0;
+RL.WD = 0;
+Rjunc.WD = 0;
+output_time = zeros(length(y), 1);
 for i=1:N
     
     V1.E = y(i);
@@ -87,8 +98,8 @@ for i=1:N
     
 end
 
-x_time = LTspice2Matlab('opamp_ideal.raw', 2);
-x = LTspice2Matlab('opamp_ideal_freq.raw', 2);
+x_time = LTspice2Matlab('opamp_ideal_time.raw', 2);
+x = LTspice2Matlab('opamp_ideal.raw', 2);
 %plot signal in time
 t_label =(1:length(t))./Fs;
 NFFT = 2^nextpow2(N);
@@ -134,4 +145,4 @@ grid on;
 xlabel('Frequency (Hz)');
 legend;
 
-hgexport(fig, 'Bridged T result 100000Hz');
+hgexport(fig, 'Bridged T result 44100Hz');
