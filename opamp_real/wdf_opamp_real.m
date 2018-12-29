@@ -39,7 +39,7 @@ addVCVSStamp(Xmat, 4, 1, 9, 1, 14, 3.1625);
 addVCVSStamp(Xmat, 5, 1, 8, 1, 15, 1);
 
 %% modeling of junctions and ports of circuit
-Fs = 44100;
+Fs = 48000;
 
 R1 = R(500);
 Ib1 = I(90e-9, 2*(5e+6));
@@ -88,13 +88,14 @@ r = (R1.PortRes - R_PortRes)/(R1.PortRes+R_PortRes);
 
 for i=1:N
     
-    Vin.E = y(i)-Voff;
+    Vin.E = 0-Voff;
     
     WU_R = WaveUp(Rjunc);
     Rjunc.WD = r*WU_R;
     
     output(i) = Voltage(RL);
 end
+
 %% WDF circuit simulation
 
 G = 100e-3;
@@ -102,8 +103,7 @@ N = Fs/10;
 t=0:N-1;
 
 trigger = zeros(length(t),1);
-trigger(1:round(Fs/10000)) = 1;
-trigger(round(Fs/10000):end) = 0;
+trigger(1:round(Fs/10000)+1) = 1;
 y = G.*trigger;
 
 output = zeros(length(y), 1);
@@ -120,6 +120,7 @@ for i=1:N
     output(i) = Voltage(RL);
 end
 
+x_time = LTspice2Matlab('opamp_macromodel.raw', 10);
 %plot signal in time
 t_label =(1:length(t))./Fs;
 NFFT = 2^nextpow2(N);
@@ -130,13 +131,14 @@ OUT = OUT1(1:NFFT/2+1);
 OUT1_phase = OUT1_phase(1:NFFT/2+1);
 %OUT(2:end-1) = 2*OUT(2:end-1);
 subplot(2,1,1);
-plot(t_label, y, '--'); 
+plot(t_label, output, 'r', 'DisplayName', 'WDF');
 hold on;
-plot(t_label, output);
+plot(x_time.time_vect, x_time.variable_mat,'--b', 'DisplayName', 'LTspice');
 hold off;
 grid on;
 xlabel Time(s);
 ylabel Voltage(V);
+legend;
 
 %plot fft of signal
 subplot(2,1,2);

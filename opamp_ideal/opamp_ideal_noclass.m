@@ -86,8 +86,8 @@ end
 %% Time analysis
 
 trigger = zeros(length(t),1);
-trigger(1:round(Fs/10000)) = 1;
-trigger(round(Fs/10000):end) = 0;
+trigger(1:end) = 0;
+trigger(1:floor(Fs/10000)+1) = 1;
 y = G.*trigger;
 
 C1_WD = 0;
@@ -149,7 +149,7 @@ yyaxis left;
 hold on;
 semilogx(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)), 'r','DisplayName','WDF Magnitude');
 [maxOUT, max_i] = max(OUT_db);
-max_i = (Fs/NFFT)*max_i;
+max_i = (Fs/NFFT)*(max_i-1);
 semilogx(x.freq_vect, 20*log10(abs(x.variable_mat)), 'b', 'DisplayName', 'LTSpice Magnitude');
 ylabel('magnitude (dB)');
 axis([1000 3000 -6 68]);

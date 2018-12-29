@@ -21,11 +21,11 @@ addVoltageSourceStamp(Xmat, 10,5,3);
 addVoltageSourceStamp(Xmat, 11,1,4);
 addVoltageSourceStamp(Xmat, 6,1,5);
 addVoltageSourceStamp(Xmat, 7,3,6);
-addNullorStamp(Xmat, 5, 1, 2, 3, 7);
+addNullorStamp(Xmat, 5, 1, 3, 2, 7);
 
 %% modeling of circuit
 
-Fs = 44100;
+Fs = 48000;
 R1 = R(500);
 V1 = V(0,1);
 R2 = R(10e+6);
@@ -71,8 +71,8 @@ for i=1:N
 end
 
 trigger = zeros(length(t),1);
-trigger(1:round(Fs/10000)) = 1;
-trigger(round(Fs/10000):end) = 0;
+trigger(1:ceil(Fs/10000)+1) = 1;
+trigger(ceil(Fs/10000)+1:end) = 0;
 y = G.*trigger;
 V1.WD = 0;
 V1.WU = 0;
@@ -99,7 +99,7 @@ for i=1:N
 end
 
 x_time = LTspice2Matlab('opamp_ideal_time.raw', 2);
-x = LTspice2Matlab('opamp_ideal.raw', 2);
+x = LTspice2Matlab('opamp_ideal_freq.raw', 2);
 %plot signal in time
 t_label =(1:length(t))./Fs;
 NFFT = 2^nextpow2(N);
@@ -145,4 +145,4 @@ grid on;
 xlabel('Frequency (Hz)');
 legend;
 
-hgexport(fig, 'Bridged T result 44100Hz');
+hgexport(fig, 'Bridged T result 48000Hz');
