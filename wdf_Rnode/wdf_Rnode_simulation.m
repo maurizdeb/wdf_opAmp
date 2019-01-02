@@ -13,11 +13,10 @@ N = Fs/10;
 t = 0:N-1;
 f0 = 100;
 trigger = zeros(length(t),1);
-trigger(1:round(Fs/10000)) = 1;
-trigger(round(Fs/10000)+1:end) = 0;
+trigger(1) = 1;
 G = 20;
-input = 20.*sin((2*pi*f0/Fs).*t);
-%input = G.*trigger;
+%input = 20.*sin((2*pi*f0/Fs).*t);
+input = trigger;
 
 %% creation of MNA X matrix
 
@@ -68,16 +67,42 @@ for i=1:N
 end
 
 ltspice_vect = LTspice2Matlab('wdf_Rnode.raw', 5);
-t = (1:length(input))./Fs;
+t = t./Fs;
+NFFT = 2^nextpow2(N);
+out_fft = fft(output, NFFT);
+OUT1 = abs(out_fft);
+OUT1_phase = (180/pi)*angle(out_fft);
+OUT = OUT1(1:NFFT/2+1);
+OUT1_phase = OUT1_phase(1:NFFT/2+1);
 %hi = plot(t, input, '--'); 
 fig = figure();
+f = Fs/NFFT*((1:(NFFT/2+1)));
+f1 = (NFFT/Fs)*100;
+f2 = (NFFT/Fs)*7000;
+OUT_db = 20*log10(OUT);
+yyaxis left;
 hold on;
-plot(t, output, 'r','DisplayName', ' WDF Voltage Over R4'); 
-plot(ltspice_vect.time_vect, ltspice_vect.variable_mat, '--b', 'DisplayName', 'LTspice Voltage Over R4');
-hold off;
+semilogx(f(f1:f2), OUT_db(f1:f2), 'r','DisplayName','WDF Magnitude');
+semilogx(ltspice_vect.freq_vect, 20*log10(abs(ltspice_vect.variable_mat)), 'b', 'DisplayName', 'LTSpice Magnitude');
+ylabel('magnitude (dB)');
+%axis([1000 3000 -6 68]);
+yyaxis right;
+semilogx(f(f1:f2), OUT1_phase(f1:f2), 'r','DisplayName', 'WDF Phase');
+%ylim([-100, 100]);
+ylabel('phase');
+semilogx(ltspice_vect.freq_vect, (180/pi)*angle(ltspice_vect.variable_mat),'b', 'DisplayName', 'LTSpice Phase');
+hold off
+%axis([1000 3000 -100 100]);
 grid on;
-xlabel('Time (s)');
-ylabel('Voltage (V)');
+xlabel('Frequency (Hz)');
 legend;
+% hold on;
+% plot(t, output, 'r','DisplayName', ' WDF Voltage Over R4'); 
+% plot(ltspice_vect.time_vect, ltspice_vect.variable_mat, '--b', 'DisplayName', 'LTspice Voltage Over R4');
+% hold off;
+% grid on;
+% xlabel('Time (s)');
+% ylabel('Voltage (V)');
+% legend;
 
 hgexport(fig, 'Generic Rnode 44100Hz');

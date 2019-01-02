@@ -71,8 +71,7 @@ for i=1:N
 end
 
 trigger = zeros(length(t),1);
-trigger(1:ceil(Fs/10000)+1) = 1;
-trigger(ceil(Fs/10000)+1:end) = 0;
+trigger(1:floor(Fs/10000)+1) = 1;
 y = G.*trigger;
 V1.WD = 0;
 V1.WU = 0;
@@ -130,17 +129,17 @@ f2 = (NFFT/Fs)*3000;
 OUT_db = 20*log10(OUT);
 yyaxis left;
 hold on;
-semilogx(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)), 'r','DisplayName','WDF Magnitude');
+semilogx(f, OUT_db, 'r','DisplayName','WDF Magnitude');
 semilogx(x.freq_vect, 20*log10(abs(x.variable_mat)), 'b', 'DisplayName', 'LTSpice Magnitude');
 ylabel('magnitude (dB)');
-axis([1000 3000 -6 68]);
+axis([10 7000 -6 68]);
 yyaxis right;
-semilogx(f(floor(f1):floor(f2)), OUT1_phase(floor(f1):floor(f2)), 'r','DisplayName', 'WDF Phase');
+semilogx(f, OUT1_phase, 'r','DisplayName', 'WDF Phase');
 %ylim([-100, 100]);
 ylabel('phase');
 semilogx(x.freq_vect, (180/pi)*angle(x.variable_mat),'b', 'DisplayName', 'LTSpice Phase');
 hold off
-axis([1000 3000 -100 100]);
+axis([10 7000 -100 100]);
 grid on;
 xlabel('Frequency (Hz)');
 legend;

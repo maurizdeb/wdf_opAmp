@@ -39,7 +39,7 @@ addVCVSStamp(Xmat, 4, 1, 9, 1, 14, 3.1625);
 addVCVSStamp(Xmat, 5, 1, 8, 1, 15, 1);
 
 %% modeling of junctions and ports of circuit
-Fs = 48000;
+Fs = 44100;
 
 R1 = R(500);
 Ib1 = I(90e-9, 2*(5e+6));
@@ -107,8 +107,45 @@ trigger(1:round(Fs/10000)+1) = 1;
 y = G.*trigger;
 
 output = zeros(length(y), 1);
+output_time = zeros(length(y), 1);
 
 r = (R1.PortRes - R_PortRes)/(R1.PortRes+R_PortRes);
+
+for i=1:N
+    
+    Vin.E = y(i)-Voff;
+    
+    WU_R = WaveUp(Rjunc);
+    Rjunc.WD = r*WU_R;
+    
+    output_time(i) = Voltage(RL);
+end
+
+%% WDF AC analyisis
+
+for i = 1:length(ConnectedPorts)
+    
+    ConnectedPorts(i).WU = 0;
+    ConnectedPorts(i).WD = 0;
+end
+Rjunc.WU = 0;
+Rjunc.WD = 0;
+N = round(Fs/5);
+
+for i=1:N
+    
+    Vin.E = 0-Voff;
+    
+    WU_R = WaveUp(Rjunc);
+    Rjunc.WD = r*WU_R;
+    
+    output(i) = Voltage(RL);
+end
+
+trigger = zeros(length(t),1);
+trigger(1) = 1;
+y = G.*trigger;
+N = Fs/10;
 
 for i=1:N
     
@@ -120,7 +157,8 @@ for i=1:N
     output(i) = Voltage(RL);
 end
 
-x_time = LTspice2Matlab('opamp_macromodel.raw', 10);
+x_time = LTspice2Matlab('opamp_macromodel_time.raw', 10);
+x_freq = LTspice2Matlab('opamp_macromodel_freq.raw', 10);
 %plot signal in time
 t_label =(1:length(t))./Fs;
 NFFT = 2^nextpow2(N);
@@ -131,7 +169,7 @@ OUT = OUT1(1:NFFT/2+1);
 OUT1_phase = OUT1_phase(1:NFFT/2+1);
 %OUT(2:end-1) = 2*OUT(2:end-1);
 subplot(2,1,1);
-plot(t_label, output, 'r', 'DisplayName', 'WDF');
+plot(t_label, output_time, 'r', 'DisplayName', 'WDF');
 hold on;
 plot(x_time.time_vect, x_time.variable_mat,'--b', 'DisplayName', 'LTspice');
 hold off;
@@ -147,15 +185,17 @@ f1 = (NFFT/Fs)*1000;
 f2 = (NFFT/Fs)*3000;
 OUT_db = 20*log10(OUT);
 yyaxis left;
-semilogx(f(floor(f1):floor(f2)), OUT_db(floor(f1):floor(f2)));
-ylabel('magnitude (dB)');
-axis([1000 3000 -6 68]);
+semilogx(f, OUT_db, 'r', 'DisplayName', 'WDF Magnitude');
 hold on;
+semilogx(x_freq.freq_vect, 20*log10(abs(x_freq.variable_mat)), '--b', 'DisplayName', 'LTspice Magnitude');
+ylabel('magnitude (dB)');
+axis([10 7000 -6 68]);
 yyaxis right;
-semilogx(f(floor(f1):floor(f2)), OUT1_phase(floor(f1):floor(f2)), '--');
+semilogx(f, OUT1_phase, 'r', 'DisplayName', 'WDF Phase');
+semilogx(x_freq.freq_vect, (180/pi)*angle(x_freq.variable_mat), '--b', 'DisplayName', 'LTspice Phase');
 %ylim([-100, 100]);
 ylabel('phase');
 hold off
-axis([1000 3000 -100 100]);
+axis([10 7000 -100 100]);
 grid on;
 xlabel('Frequency (Hz)');
