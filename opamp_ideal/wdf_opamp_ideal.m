@@ -98,7 +98,7 @@ for i=1:N
 end
 
 x_time = LTspice2Matlab('opamp_ideal_time.raw', 2);
-x = LTspice2Matlab('opamp_ideal_freq.raw', 2);
+x = LTspice2Matlab('opamp_ideal.raw', 2);
 %plot signal in time
 t_label =(1:length(t))./Fs;
 NFFT = 2^nextpow2(N);
