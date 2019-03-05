@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-%% modeling of MNA matrix (adaptation on Rb)
+%% modeling of MNA matrix (adaptation on Rc)
 
 addpath ../class_definitions
 
@@ -47,7 +47,7 @@ R2 = R(500);
 %% adaptation of R
 
 R_vect = [Ra, Rb, Rc, Rd, Re, Rf, Rg, Rh, Ri];
-ConnectedPorts = [V1, R7, R5, C1, R6, C2, R3, R2]; %all connected ports without R7 that is the adaptation port
+ConnectedPorts = [V1, R7, R5, C1, R6, C2, R3, R2]; %all connected ports without R4 that is the adaptation port
 
 Rjunc = RJunction(Xmat, R_vect, ConnectedPorts, Rc);
 
